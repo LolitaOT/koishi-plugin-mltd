@@ -1,0 +1,20 @@
+{
+  "name": "koishi-plugin-mltd",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LolitaOT/koishi-plugin-mltd.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LolitaOT/koishi-plugin-mltd/issues"
+  },
+  "homepage": "https://github.com/LolitaOT/koishi-plugin-mltd#readme"
+}
