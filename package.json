@@ -16,5 +16,11 @@
   "bugs": {
     "url": "https://github.com/LolitaOT/koishi-plugin-mltd/issues"
   },
-  "homepage": "https://github.com/LolitaOT/koishi-plugin-mltd#readme"
+  "homepage": "https://github.com/LolitaOT/koishi-plugin-mltd#readme",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "node-schedule": "^2.0.0",
+    "sequelize": "^6.6.4",
+    "sqlite3": "^5.0.2"
+  }
 }
