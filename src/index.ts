@@ -1,13 +1,8 @@
 import { Context,Logger } from 'koishi'
-import './database'
-import {} from './sync'
+import { MLTD } from './mltd'
 module.exports.name = 'mltd'
+export const mltd = new MLTD()
 export const logger = new Logger('mltd')
-
 module.exports.apply = (ctx: Context) => {
-  // console.log()
-  // setTimeout(() => {
-  //   console.log(ctx.database)
-  //   require('./database')
-  // }, 5000)
+  mltd.init(ctx)
 }

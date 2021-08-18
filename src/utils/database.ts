@@ -1,9 +1,8 @@
 import { Sequelize,DataTypes,Model } from 'sequelize'
-import { EventInfo } from './interface'
 import path from 'path'
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: path.resolve(__dirname,'mltd.db'),
+  storage: path.resolve(__dirname,'../data/mltd.db'),
   logging: false,
   define: {
     freezeTableName: true,
@@ -138,7 +137,18 @@ const EventPointModel = sequelize.define<EventPoint>('eventPoint', {
   }
 })
 
-const EventAlarm = sequelize.define('eventAlarm', {
+export interface EventAlarm extends Model {
+  id: number,
+  idolId: number,
+  idolName: string,
+  channelId: string,
+  userId: string,
+  rank: number,
+  point: number,
+  enabled: boolean,
+} 
+
+const EventAlarmModel = sequelize.define<EventAlarm>('eventAlarm', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -152,11 +162,11 @@ const EventAlarm = sequelize.define('eventAlarm', {
     type: DataTypes.STRING(32),
     defaultValue: ''
   },
-  groupId: {
-    type: DataTypes.INTEGER
+  channelId: {
+    type: DataTypes.STRING(64)
   },
   userId: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING(128),
     allowNull: false
   },
   rank: {
@@ -210,7 +220,7 @@ sequelize.sync();
 export {
   EventListModel,
   EventPointModel,
-  EventAlarm,
+  EventAlarmModel,
   IdolInfoModel
 }
 

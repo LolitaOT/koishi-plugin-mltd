@@ -4,11 +4,11 @@
  * @param {string} cFormat
  * @returns {string | null}
  */
-export const parseTime = function (time: string | number | Date, cFormat: string) {
+export const parseTime = function (time: string | number | Date, cFormat: string = '{y}-{m}-{d} {h}:{i}:{s}') {
   if (arguments.length === 0 || !time) {
     return null
   }
-  const format = cFormat || '{y}-{m}-{d} {h}:{i}:{s}'
+  const format = cFormat
   let date
   if (typeof time === 'object') {
     date = time
