@@ -4,7 +4,7 @@ import $ from '../utils/request'
 import { parseTime } from '../utils'
 import { logger } from '..'
 import { RANKS,ANNIVERSARY_RANKS } from '../utils/const'
-import { EventInfo,IdolPointLog, BorderPoints, IdolCard } from '../utils/interface'
+import { EventInfo,IdolPointLog, BorderPoints } from '../utils/interface'
 import { EventPoint } from '../utils/database'
 import { getLastEventId } from './'
 import idolInfoJson from '../data/idolInfo.json'
@@ -18,22 +18,51 @@ async function eventListSync() {
     const insertIds = rows.map(v => v.id)
     for (const key in response) {
       const row = response[key];
+      const data = {
+        name: row.name,
+        type: row.type,
+        appealType: row.appealType,
+        beginDate: new Date(row.schedule.beginDate),
+        endDate: new Date(row.schedule.endDate),
+        pageBeginDate: new Date(row.schedule.pageBeginDate),
+        pageEndDate: new Date(row.schedule.pageEndDate),
+        boostBeginDate: row.schedule.boostBeginDate ? new Date(row.schedule.boostBeginDate) : null,
+        boostEndDate: row.schedule.boostEndDate ? new Date(row.schedule.boostEndDate) : null,
+        eventLength: (new Date(row.schedule.endDate).getTime() + 1000 - new Date(row.schedule.beginDate).getTime()) / (1000 * 60 * 30) ,
+        eventBoostLength: row.schedule.boostBeginDate ? (new Date(row.schedule.boostEndDate).getTime() + 1000 - new Date(row.schedule.boostBeginDate).getTime()) / (1000 * 60 * 30) : null
+      }
       if(!insertIds.includes(row.id)) {
         await EventListModel.create({
           id: row.id,
-          name: row.name,
-          type: row.type,
-          appealType: row.appealType,
-          beginDate: new Date(row.schedule.beginDate),
-          endDate: new Date(row.schedule.endDate),
-          pageBeginDate: new Date(row.schedule.pageBeginDate),
-          pageEndDate: new Date(row.schedule.pageEndDate),
-          boostBeginDate: row.schedule.boostBeginDate ? new Date(row.schedule.boostBeginDate) : null,
-          boostEndDate: row.schedule.boostEndDate ? new Date(row.schedule.boostEndDate) : null,
-          eventLength: (new Date(row.schedule.endDate).getTime() + 1000 - new Date(row.schedule.beginDate).getTime()) / (1000 * 60 * 30) ,
-          eventBoostLength:row.schedule.boostBeginDate ? (new Date(row.schedule.boostEndDate).getTime() + 1000 - new Date(row.schedule.boostBeginDate).getTime()) / (1000 * 60 * 30) : null,
+          name: data.name,
+          type: data.type,
+          appealType: data.appealType,
+          beginDate: data.beginDate,
+          endDate: data.endDate,
+          pageBeginDate: data.pageBeginDate,
+          pageEndDate: data.pageEndDate,
+          boostBeginDate: data.boostBeginDate,
+          boostEndDate: data.boostEndDate,
+          eventLength: data.eventLength,
+          eventBoostLength: data.eventBoostLength
         })
-        logger.info(`活动 ${row.name }已插入数据库`)
+        logger.info(`活动:${row.name }已插入数据库`)
+      } else {
+        const raw = rows.find(v => v.id === row.id)
+        if(!raw) return
+        raw.name = data.name
+        raw.type = data.type
+        raw.appealType = data.appealType
+        raw.beginDate = data.beginDate
+        raw.endDate = data.endDate
+        raw.pageBeginDate = data.pageBeginDate
+        raw.pageEndDate = data.pageEndDate
+        raw.boostBeginDate = data.boostBeginDate
+        raw.boostEndDate = data.boostEndDate
+        raw.eventLength = data.eventLength
+        raw.eventBoostLength = data.eventBoostLength || 0
+        await raw.save()
+        // logger.info(`活动 ${row.name }已更新`)
       }
     }
     logger.info(`事件列表同步完成`)
@@ -164,13 +193,13 @@ async function eventPointSync(eventId: number, updateAnniversary = true) {
   }
 }
 
-async function updateNewPoint(eid: number | null) {
+async function updateNewPoint(eid?: number) {
+  const eventId = eid || await getLastEventId()
+  if(!eventId) {
+    logger.error('现在不是活动时间')
+    return 
+  }
   try {
-    const eventId = eid || await getLastEventId()
-    if(!eventId) {
-      logger.error('现在不是活动时间')
-      return 
-    }
     const eventInfo = await EventListModel.findByPk(eventId)
     if(!eventInfo) {
       return
@@ -207,7 +236,7 @@ async function updateNewPoint(eid: number | null) {
       await anniversaryEventPointSync(eventId)
     }
   }catch(e) {
-    logger.error(`获取最新分数信息失败`)
+    logger.error(`获取最新分数信息失败,活动id：` + eventId)
     logger.error(e)
   }
 }
@@ -218,22 +247,13 @@ async function idolInfoSync() {
   })
   for (const key in idolInfoJson) {
     const { id, nameJP, nameZH, birthday } = idolInfoJson[key]
-    const idolInfo = await IdolInfoModel.findByPk(id)
-    if(!idolInfo) {
-      await IdolInfoModel.create({
-        id: id,
-        nameJP,
-        nameZH,
-        birthday
-      })
-      logger.info(`${nameJP}信息已插入`)
-    }else {
-      idolInfo.nameJP = nameJP
-      idolInfo.nameZH = nameZH
-      idolInfo.birthday = new Date(birthday)
-      await idolInfo.save()
-      logger.info(`${nameJP}信息已更新`)
-    }
+    await IdolInfoModel.create({
+      id: id,
+      nameJP,
+      nameZH,
+      birthday
+    })
+    // logger.info(`${nameJP}信息已插入`)
   }
   logger.info('小偶像基础信息更新完毕。')
 }

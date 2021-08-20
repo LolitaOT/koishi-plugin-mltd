@@ -4,30 +4,32 @@ import {
   updateOrInsertPointAlarm, 
   cancelPointAlarm,
   findIdol,
-  getPointAlarm } from './action'
+  getPointAlarm
+} from './action'
 import { AlarmData } from './utils/interface'
 import { RANKS, ANNIVERSARY_RANKS } from './utils/const'
 import _ from 'lodash'
 // import './database'
-// import './schedule'
+import './schedule'
 import { __init__ , InitConfig } from './action/sync'
-interface Config {
+export interface Config {
   init?:InitConfig
 }
 
 export class MLTD {
   ctx!: Context
-  constructor(config: Config = {}) {
-    __init__(config?.init || {})
+  constructor() {
+    
   }
-  async init(ctx:Context) {
+  async init(ctx:Context, config: Config = {}) {
+    if(config.init) {
+      __init__(config.init)
+    }
     this.ctx = ctx
-
     this.initBorderpoint()
     this.initAlarm()
     this.initCancelAlarm()
     this.initLookAlarm()
-    // this.initTest()
   }
   initBorderpoint() {
     this.ctx.command('mltd','土豆相关指令')
@@ -159,6 +161,7 @@ export class MLTD {
     .subcommand('.lookalarm', '查看已设置的档线报警，也可以输入[干活啦.查看报警]来触发')
     .channelFields(['id'])
     .action( async ({ session }) => {
+      console.log('lookalarm')
       if(!session || !session.channel || !session.channel.id || !session.userId) return
       try {
         const result = await getPointAlarm({channelId: session.channel.id,userId: session.userId})

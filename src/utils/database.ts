@@ -4,6 +4,7 @@ const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: path.resolve(__dirname,'../data/mltd.db'),
   logging: false,
+  // timezone: '+08:00',
   define: {
     freezeTableName: true,
   }

@@ -27,7 +27,7 @@ export async function findIdol(k: string) {
 
 export async function getBorderPoint(keyword = '') {
   const id = await getLastEventId()
-  if(id) return false
+  if(!id) return false
   const eventDetails = await EventListModel.findByPk(id)
   if(!eventDetails) return false
   let idolInfo = undefined

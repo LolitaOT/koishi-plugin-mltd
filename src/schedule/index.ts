@@ -52,7 +52,7 @@ async function switchEventSchedule() {
     if(id) {
       if(!globleSchedult.updateEventPoinit) {
         logger.info(`活动已开启，踏踏开`)
-        globleSchedult.updateEventPoinit = schedule.scheduleJob(jobTime.updateEventPoinit(),() => updateNewPoint)
+        globleSchedult.updateEventPoinit = schedule.scheduleJob(jobTime.updateEventPoinit(),() => updateNewPoint())
         globleSchedult.eventAlarm = schedule.scheduleJob(jobTime.eventAlarm(),eventAlarm)
         await eventPointSync(id,false)
       }
@@ -81,6 +81,7 @@ async function eventAlarm() {
       const alarm = alarms[key];
       const idolId = alarm.idolId
       let response = await getBorderPoint(idolId + '')
+      // console.log(response)
       if(!response || response.idolId !== idolId) break
       const scores = response.scores
       const targetScore = scores.find(v => v.rank == alarm.rank)

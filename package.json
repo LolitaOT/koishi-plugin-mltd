@@ -1,6 +1,6 @@
 {
   "name": "koishi-plugin-mltd",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "",
   "main": "./lib/index.js",
   "scripts": {
@@ -10,8 +10,8 @@
     "type": "git",
     "url": "git+https://github.com/LolitaOT/koishi-plugin-mltd.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["koishi","mltd","imas","idolmaster"],
+  "author": "LolitaOT",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/LolitaOT/koishi-plugin-mltd/issues"
@@ -23,6 +23,9 @@
     "node-schedule": "^2.0.0",
     "sequelize": "^6.6.4",
     "sqlite3": "^5.0.2"
+  },
+  "peerDependencies": {
+    "koishi-core": ">=3"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.172",
