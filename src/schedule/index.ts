@@ -1,7 +1,6 @@
 import schedule from 'node-schedule'
 import { eventListSync, eventPointSync, updateNewPoint } from '../action/sync'
-import { isUpdateDataTime } from '../action'
-import { getBorderPoint } from '../action'
+import { isUpdateDataTime, getBorderPoint } from '../action'
 import { EventAlarmModel } from '../utils/database'
 import { logger, mltd } from '..'
 

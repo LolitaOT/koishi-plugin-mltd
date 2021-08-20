@@ -9,9 +9,10 @@ import {
 import { AlarmData } from './utils/interface'
 import { RANKS, ANNIVERSARY_RANKS } from './utils/const'
 import _ from 'lodash'
-// import './database'
+import './utils/database'
 import './schedule'
 import { __init__ , InitConfig } from './action/sync'
+import { logger } from '.'
 export interface Config {
   init?:InitConfig
 }
@@ -22,9 +23,12 @@ export class MLTD {
     
   }
   async init(ctx:Context, config: Config = {}) {
-    if(config.init) {
-      __init__(config.init)
-    }
+    // if(config.init) {
+      // 保证数据库初始化完成后再执行
+      setTimeout(()=> {
+        __init__(config.init)
+      }, 1000)
+    // }
     this.ctx = ctx
     this.initBorderpoint()
     this.initAlarm()
@@ -127,7 +131,7 @@ export class MLTD {
         })
         return responseStart + formatArray.join('\n')
       }catch(e) {
-        console.log(e)
+        logger.error(e)
         return '出现未知错误，呜呜呜。'
       }
     })
@@ -149,7 +153,7 @@ export class MLTD {
         await cancelPointAlarm({channelId: session.channel.id, userId: session.userId ,idolId: 0,allClean: true})
         return '警报已全部取消'
       }catch(e) {
-        console.log(e)
+        logger.error(e)
         return '出现未知错误，呜呜呜。'
       }
     })
@@ -161,7 +165,7 @@ export class MLTD {
     .subcommand('.lookalarm', '查看已设置的档线报警，也可以输入[干活啦.查看报警]来触发')
     .channelFields(['id'])
     .action( async ({ session }) => {
-      console.log('lookalarm')
+      // console.log('lookalarm')
       if(!session || !session.channel || !session.channel.id || !session.userId) return
       try {
         const result = await getPointAlarm({channelId: session.channel.id,userId: session.userId})
@@ -173,7 +177,7 @@ export class MLTD {
           }).join('\n')
         }
       }catch(e) {
-        console.log(e)
+        logger.error(e)
         return '出现未知错误，呜呜呜。'
       }
     })

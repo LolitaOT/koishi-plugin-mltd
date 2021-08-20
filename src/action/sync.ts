@@ -299,11 +299,11 @@ function getNoInludeDatas(insertedDatas:Array<EventPoint>, datas: Array<rankData
 export interface InitConfig {
   loadHistory?: boolean
 }
-async function __init__ (config: InitConfig) {
+async function __init__ (config?: InitConfig) {
   // if( process.env.NODE_ENV === 'production') {
   await idolInfoSync()
   await eventListSync()
-  if(config.loadHistory) {
+  if(config?.loadHistory) {
     await AllEventPointSync()
     await eventPointSync(44)
     // anniversaryEventPointSync(92)
