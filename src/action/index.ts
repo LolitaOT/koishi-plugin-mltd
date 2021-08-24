@@ -25,6 +25,14 @@ export async function findIdol(k: string) {
   return idolInfo
 }
 
+export async function findIdolsByBirthday(birthday: string) {
+  return await IdolInfoModel.findAll({
+    where: {
+      birthday
+    }
+  })
+}
+
 export async function getBorderPoint(keyword = '') {
   const id = await getLastEventId()
   if(!id) return false

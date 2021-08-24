@@ -10,11 +10,12 @@ import { AlarmData } from './utils/interface'
 import { RANKS, ANNIVERSARY_RANKS } from './utils/const'
 import _ from 'lodash'
 import './utils/database'
-import './schedule'
+import { runCheckBirthday } from  './schedule'
 import { __init__ , InitConfig } from './action/sync'
 import { logger } from '.'
 export interface Config {
-  init?:InitConfig
+  init?:InitConfig,
+  checkBirthday?: Boolean
 }
 
 export class MLTD {
@@ -25,11 +26,14 @@ export class MLTD {
   async init(ctx:Context, config: Config = {}) {
     // if(config.init) {
       // 保证数据库初始化完成后再执行
-      setTimeout(()=> {
-        __init__(config.init)
-      }, 1000)
-    // }
+    setTimeout(()=> {
+      __init__(config.init)
+    }, 1000)
+      // }
     this.ctx = ctx
+    if(config.checkBirthday) {
+      runCheckBirthday()
+    }
     this.initBorderpoint()
     this.initAlarm()
     this.initCancelAlarm()
@@ -53,27 +57,6 @@ export class MLTD {
     .option('idol','[idol] 小偶像名字，可模糊匹配')
   }
   initTest() {
-    this.ctx.command('mltd')
-    .subcommand('.test')
-    .channelFields(['id'])
-    .action( async ({ session,command }) => {
-      if(!session || !command || !session.channel) return
-      return `
-        你说话
-        也会像我这样
-        出现换行吗？
-      `.trim()
-      // const { id } = session.channel
-      // session.send('请输入消息')
-      // const result = await session.prompt(5000)
-      // console.log(result)
-      // if(result) {
-      //   return '你输入的消息是：' + result
-      // }else {
-      //   return '咋的，嫌输入时间太长吗？'
-      // }
-      // this.ctx.broadcast(['123'], 'message')
-    })
   }
   initAlarm() {
     this.ctx.command('mltd','土豆相关指令')
@@ -191,5 +174,8 @@ export class MLTD {
 
     await cancelPointAlarm({userId: data.userId, channelId: data.channelId,idolId: data.idolId})
     
+  }
+  async broadcast(text: string) {
+    this.ctx.broadcast(text)
   }
 }

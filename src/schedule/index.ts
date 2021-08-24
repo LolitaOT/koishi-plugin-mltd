@@ -1,9 +1,8 @@
 import schedule from 'node-schedule'
 import { eventListSync, eventPointSync, updateNewPoint } from '../action/sync'
-import { isUpdateDataTime, getBorderPoint } from '../action'
+import { isUpdateDataTime, getBorderPoint, findIdolsByBirthday } from '../action'
 import { EventAlarmModel } from '../utils/database'
 import { logger, mltd } from '..'
-
 const jobTime = {
   checkEventList() {
     const rule = new schedule.RecurrenceRule()
@@ -26,19 +25,44 @@ const jobTime = {
     // rule.second = 30
     rule.second = [0,30]
     return rule
+  },
+  checkBirthday() {
+    const rule = new schedule.RecurrenceRule()
+    rule.hour = 23
+    return rule
   }
 }
 interface globleSchedult {
   checkEventList: any,
   switchEventSchedule: any,
   eventAlarm?:any,
+  checkBirthday?:any,
   updateEventPoinit: any
 }
 const globleSchedult: globleSchedult = {
   checkEventList: schedule.scheduleJob(jobTime.checkEventList(), checkEventList),
   switchEventSchedule: schedule.scheduleJob(jobTime.switchEventSchedule(),switchEventSchedule),
+  checkBirthday: null,
   eventAlarm: null,
   updateEventPoinit: null
+}
+export function runCheckBirthday() {
+  checkBirthday()
+  globleSchedult.checkBirthday = schedule.scheduleJob(jobTime.checkBirthday(),checkBirthday)
+}
+async function checkBirthday() {
+  const nowTime = new Date().getTime()
+  const targetTime = nowTime + 1000 * 60 * 60 * 2 
+  const t = new Date(targetTime)
+  const m = t.getMonth() + 1
+  const d = t.getDate()
+  const idols = await findIdolsByBirthday(m + '/' + d)
+  // const idols = await findIdolsByBirthday('5/22')
+  // console.log(idols)
+  if(idols && idols.length > 0) {
+    let t = '今天是' + idols.map(v => v.nameJP).join('、') + '的生日哦，记得打歌领体力药水。'
+    mltd.broadcast(t)
+  }
 }
 
 async function checkEventList() {

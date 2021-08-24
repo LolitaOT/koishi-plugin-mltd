@@ -15,11 +15,17 @@
 **需要使用koishi的数据库插件**
 
 ### 配置项
-目前插件只有一个配置项
+``` js
+  {
+    init: {
+      loadHistory: Boolean
+    },
+    checkBirthday: Boolean
+  }
 ```
-  init.loadHistory
-```
-布尔值，是否更新旧数据
+`init.loadHistory` 布尔值，是否更新旧数据
+
+`checkBirthday` 布尔值，是否广播小偶像生日提醒
 
 ### 功能
 
@@ -27,6 +33,7 @@
 - 设置档线报警
 - 取消报警
 - 查看已设置的报警
+- 小偶像生日提醒
 
 其他功能以后会加~~也许吧~~
 
