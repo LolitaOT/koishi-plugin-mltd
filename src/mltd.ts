@@ -9,7 +9,7 @@ import {
 import { AlarmData } from './utils/interface'
 import { RANKS, ANNIVERSARY_RANKS } from './utils/const'
 import _ from 'lodash'
-import './utils/database'
+import { sequelize } from './utils/database'
 import { runCheckBirthday } from  './schedule'
 import { __init__ , InitConfig } from './action/sync'
 import { logger } from '.'
@@ -24,12 +24,9 @@ export class MLTD {
     
   }
   async init(ctx:Context, config: Config = {}) {
-    // if(config.init) {
-      // 保证数据库初始化完成后再执行
-    setTimeout(()=> {
-      __init__(config.init)
-    }, 1000)
-      // }
+    // 保证数据库初始化完成后再执行
+    await sequelize.sync()
+    __init__(config.init)
     this.ctx = ctx
     if(config.checkBirthday) {
       runCheckBirthday()

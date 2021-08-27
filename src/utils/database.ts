@@ -1,8 +1,9 @@
 import { Sequelize,DataTypes,Model } from 'sequelize'
 import path from 'path'
+import os from 'os'
 const sequelize = new Sequelize({
   dialect: 'sqlite',
-  storage: path.resolve(__dirname,'../data/mltd.db'),
+  storage: path.resolve(os.homedir(),'koishi/mltd.db'),
   logging: false,
   // timezone: '+08:00',
   define: {
@@ -211,7 +212,7 @@ const IdolInfoModel = sequelize.define<IdolInfo>('idolInfo', {
 })
 
 
-sequelize.sync();
+// sequelize.sync();
 
 // (async () => {
 //   const result = await EventListModel.findAll()
@@ -219,6 +220,7 @@ sequelize.sync();
 // })()
 
 export {
+  sequelize,
   EventListModel,
   EventPointModel,
   EventAlarmModel,
