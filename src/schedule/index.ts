@@ -29,6 +29,8 @@ const jobTime = {
   checkBirthday() {
     const rule = new schedule.RecurrenceRule()
     rule.hour = 23
+    rule.minute = 0
+    rule.second = 0
     return rule
   }
 }
