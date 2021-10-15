@@ -1,4 +1,8 @@
 import schedule from 'node-schedule'
+import { segment } from 'koishi'
+import request from '../utils/request'
+import cheerio from 'cheerio'
+import { getImage } from '../utils'
 import { eventListSync, eventPointSync, updateNewPoint } from '../action/sync'
 import { isUpdateDataTime, getBorderPoint, findIdolsByBirthday } from '../action'
 import { EventAlarmModel } from '../utils/database'
@@ -29,7 +33,7 @@ const jobTime = {
   checkBirthday() {
     const rule = new schedule.RecurrenceRule()
     rule.hour = 23
-    rule.minute = 0
+    rule.minute = 1
     rule.second = 0
     return rule
   }
@@ -50,19 +54,45 @@ const globleSchedult: globleSchedult = {
 }
 export function runCheckBirthday() {
   checkBirthday()
-  globleSchedult.checkBirthday = schedule.scheduleJob(jobTime.checkBirthday(),checkBirthday)
+  globleSchedult.checkBirthday = schedule.scheduleJob(jobTime.checkBirthday(), () => checkBirthday())
 }
-async function checkBirthday() {
+// demo()
+async function getBirthdayReply() {
+  try {
+
+    const targetURI = "http://rss.miyamiyao.com/twitter/keyword/%E6%9C%AC%E6%97%A5%20%E8%AA%95%E7%94%9F%E6%97%A5%20(from:imasml_theater)"
+    const data = await request({
+      url: targetURI,
+    })
+    const html = cheerio.load((data as unknown as string))
+    const $item = cheerio.load(html('item')[0])
+    const title = $item('title').html()?.replace('&lt;![CDATA[', '').replace(']]&gt;', '')
+    const imgSrc = $item('img')[0].attribs.src
+    const img = (await getImage(imgSrc)).toString('base64')
+    const reply = `${title}\n${segment('image', { url: 'base64://' + img })}`
+    // mltd.broadcast(reply)
+    return reply
+  }catch(e) {
+    logger.error('获取生日图片时出现错误')
+    return '[生日图片]'
+  }
+  // 'data:image/png;base64,' + Buffer.from(buffer, 'utf8').toString('base64')
+}
+export async function checkBirthday(check = false) {
   const nowTime = new Date().getTime()
   const targetTime = nowTime + 1000 * 60 * 60 * 2 
   const t = new Date(targetTime)
   const m = t.getMonth() + 1
   const d = t.getDate()
   const idols = await findIdolsByBirthday(m + '/' + d)
-  // const idols = await findIdolsByBirthday('5/22')
-  // console.log(idols)
-  if(idols && idols.length > 0) {
-    let t = '今天是' + idols.map(v => v.nameJP).join('、') + '的生日哦，记得打歌领体力药水。'
+  if((idols && idols.length > 0) || check) {
+    const retry = await getBirthdayReply()
+    let t = retry + '\n'
+    if(check) {
+      t += `这是一条测试用的生日提醒`
+    } else {
+      t += '今天是' + idols.map(v => v.nameJP).join('、') + '的生日哦，记得打歌领体力药水。'
+    }
     mltd.broadcast(t)
   }
 }

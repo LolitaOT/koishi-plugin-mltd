@@ -10,7 +10,7 @@ import { AlarmData } from './utils/interface'
 import { RANKS, ANNIVERSARY_RANKS } from './utils/const'
 import _ from 'lodash'
 import { sequelize } from './utils/database'
-import { runCheckBirthday } from  './schedule'
+import { runCheckBirthday, checkBirthday } from  './schedule'
 import { __init__ , InitConfig } from './action/sync'
 import { logger } from '.'
 export interface Config {
@@ -35,6 +35,7 @@ export class MLTD {
     this.initAlarm()
     this.initCancelAlarm()
     this.initLookAlarm()
+    this.initTest()
   }
   initBorderpoint() {
     this.ctx.command('mltd','土豆相关指令')
@@ -54,6 +55,13 @@ export class MLTD {
     .option('idol','[idol] 小偶像名字，可模糊匹配')
   }
   initTest() {
+    // console.log('213213')
+    this.ctx.command('mltd','土豆相关指令')
+    .subcommand('.birthday', '隐藏指令，测试生日功能是否正常', { hidden: true, authority: 3 })
+    .action(() => {
+      // console.log('动一下啊')
+      checkBirthday(true)
+    })
   }
   initAlarm() {
     this.ctx.command('mltd','土豆相关指令')

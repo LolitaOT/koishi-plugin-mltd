@@ -1,3 +1,4 @@
+import download from 'download'
 /**
  * Parse the time to string
  * @param {(Object|string|number)} time
@@ -45,4 +46,9 @@ export const parseTime = function (time: string | number | Date, cFormat: string
     return value.toString().padStart(2, '0')
   })
   return time_str
+}
+
+export const getImage = async (url: string) => {
+  const targetUrl = "http://link.miyamiyao.com:8081/?url=" + encodeURI(url)
+  return await download(targetUrl)
 }
