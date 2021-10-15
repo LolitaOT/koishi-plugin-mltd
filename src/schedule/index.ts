@@ -1,5 +1,5 @@
 import schedule from 'node-schedule'
-import { segment } from 'koishi'
+import { segment, Session } from 'koishi'
 import request from '../utils/request'
 import cheerio from 'cheerio'
 import { getImage } from '../utils'
@@ -78,7 +78,7 @@ async function getBirthdayReply() {
   }
   // 'data:image/png;base64,' + Buffer.from(buffer, 'utf8').toString('base64')
 }
-export async function checkBirthday(check = false) {
+export async function checkBirthday(check = false, session?:Session) {
   const nowTime = new Date().getTime()
   const targetTime = nowTime + 1000 * 60 * 60 * 2 
   const t = new Date(targetTime)
@@ -93,7 +93,11 @@ export async function checkBirthday(check = false) {
     } else {
       t += '今天是' + idols.map(v => v.nameJP).join('、') + '的生日哦，记得打歌领体力药水。'
     }
-    mltd.broadcast(t)
+    if(session){
+      session.send(t)
+    } else {
+      mltd.broadcast(t)
+    }
   }
 }
 

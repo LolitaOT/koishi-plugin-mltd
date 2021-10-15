@@ -58,9 +58,9 @@ export class MLTD {
     // console.log('213213')
     this.ctx.command('mltd','土豆相关指令')
     .subcommand('.birthday', '隐藏指令，测试生日功能是否正常', { hidden: true, authority: 3 })
-    .action(() => {
+    .action(({ session }) => {
       // console.log('动一下啊')
-      checkBirthday(true)
+      checkBirthday(true, session)
     })
   }
   initAlarm() {
