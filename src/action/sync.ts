@@ -62,7 +62,6 @@ async function eventListSync() {
         raw.eventLength = data.eventLength
         raw.eventBoostLength = data.eventBoostLength || 0
         await raw.save()
-        // logger.info(`活动 ${row.name }已更新`)
       }
     }
     logger.info(`事件列表同步完成`)

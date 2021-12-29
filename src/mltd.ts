@@ -36,6 +36,7 @@ export class MLTD {
     this.initCancelAlarm()
     this.initLookAlarm()
     this.initTest()
+    this.initAnimate()
   }
   initBorderpoint() {
     this.ctx.command('mltd','土豆相关指令')
@@ -53,6 +54,14 @@ export class MLTD {
     .shortcut(/^干活啦。档线查询 (\S+)$/, { args: ['$1']} )
     .shortcut(/^干活啦\.档线查询 (\S+)$/, { args: ['$1']} )
     .option('idol','[idol] 小偶像名字，可模糊匹配')
+  }
+  initAnimate() {
+    this.ctx.command('mltd').subcommand('.animate', '今天百万动画化了吗？').action(() => {
+      const date = new Date('2020-07-04')
+      const now = new Date()
+      console.log()
+      return `今天距离百万动画化已经过去了${((now.getTime() - date.getTime()) / (24*60*60*1000)).toFixed(0)}天了~~~`
+    })
   }
   initTest() {
     // console.log('213213')
